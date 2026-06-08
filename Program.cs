@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using QLBaoDienTu.Data;
 using QLBaoDienTu.Models;
 using QLBaoDienTu.Models._Users;
 
@@ -7,7 +8,7 @@ namespace QLBaoDienTu
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -20,29 +21,25 @@ namespace QLBaoDienTu
                 .AddIdentity<AppUser, AppRole>(options =>
                 {
                     // Password Policy
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
+                    options.Password.RequiredUniqueChars = 0;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequiredLength = 4;
-                    options.Password.RequiredUniqueChars = 0;
-
-                    // User Policy
-                    options.User.RequireUniqueEmail = false;
-                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-
-                    // Lockout Policy
-                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                    options.Lockout.MaxFailedAccessAttempts = 5;
-                    options.Lockout.AllowedForNewUsers = true;
-
-                    // SignIn Policy
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireDigit = false;
+                    options.User.RequireUniqueEmail = true;
                     options.SignIn.RequireConfirmedEmail = false;
                 })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+            builder.Services.AddTransient<SeedData>();
 
             // ===== Authentication Cookie =====
+            builder.Services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+                o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            });
+
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
@@ -60,11 +57,11 @@ namespace QLBaoDienTu
 
             var app = builder.Build();
 
-            // ===== Auto-apply Migrations on Startup =====
             using (var scope = app.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                db.Database.Migrate();
+                var services = scope.ServiceProvider;
+                var seeder = scope.ServiceProvider.GetRequiredService<SeedData>();
+                await seeder.SeedingDataAsync();
             }
 
             // Configure the HTTP request pipeline.
