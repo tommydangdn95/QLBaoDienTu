@@ -12,12 +12,5 @@
         public bool IsApproved { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ApprovedDate { get; set; }
-
-        // Foreign Keys
-        public virtual News News { get; set; }
-        public virtual Comment ParentComment { get; set; }
-
-        // Navigation - Nested comments
-        public virtual ICollection<Comment> ChildComments { get; set; } = new List<Comment>();
     }
 }

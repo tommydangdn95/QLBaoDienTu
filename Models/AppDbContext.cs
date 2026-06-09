@@ -57,33 +57,6 @@ namespace QLBaoDienTu.Models
                 entity.HasIndex(e => new { e.Status, e.PublishedDate });
                 entity.HasIndex(e => e.IsFeatured);
 
-                // Relationships
-                entity.HasOne(e => e.Category)
-                    .WithMany(c => c.News)
-                    .HasForeignKey(e => e.CategoryId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasMany(e => e.NewsImages)
-                    .WithOne(ni => ni.News)
-                    .HasForeignKey(ni => ni.NewsId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasMany(e => e.Comments)
-                    .WithOne(c => c.News)
-                    .HasForeignKey(c => c.NewsId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                // Relationship: SubmittedByUser
-                entity.HasOne(e => e.SubmittedByUser)
-                    .WithMany()
-                    .HasForeignKey(e => e.SubmittedByUserId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                // Relationship: ApprovedByAdmin
-                entity.HasOne(e => e.ApprovedByAdmin)
-                    .WithMany()
-                    .HasForeignKey(e => e.ApprovedByAdminId)
-                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             // ===== NEWSIMAGE CONFIGURATION =====
@@ -100,19 +73,6 @@ namespace QLBaoDienTu.Models
             modelBuilder.Entity<RelatedNews>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
-                // Main News relationship
-                entity.HasOne(e => e.MainNews)
-                    .WithMany(n => n.RelatedNewsAsMain)
-                    .HasForeignKey(e => e.MainNewsId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                // Related News relationship
-                entity.HasOne(e => e.RelatedNewsItem)
-                    .WithMany(n => n.RelatedNewsAsRelated)
-                    .HasForeignKey(e => e.RelatedNewsId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasIndex(e => e.MainNewsId);
                 entity.HasIndex(e => e.RelatedNewsId);
 
@@ -127,17 +87,6 @@ namespace QLBaoDienTu.Models
                 entity.Property(e => e.AuthorName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.AuthorEmail).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Content).IsRequired();
-
-                // Relationships
-                entity.HasOne(e => e.News)
-                    .WithMany(n => n.Comments)
-                    .HasForeignKey(e => e.NewsId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.ParentComment)
-                    .WithMany(c => c.ChildComments)
-                    .HasForeignKey(e => e.ParentCommentId)
-                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasIndex(e => e.NewsId);
                 entity.HasIndex(e => e.IsApproved);

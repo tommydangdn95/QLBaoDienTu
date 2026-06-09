@@ -10,8 +10,5 @@
         public bool IsThumbnail { get; set; } // Ảnh đại diện
         public int DisplayOrder { get; set; }
         public DateTime CreatedDate { get; set; }
-
-        // Foreign Key
-        public virtual News News { get; set; }
     }
 }

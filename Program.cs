@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using QLBaoDienTu.Data;
 using QLBaoDienTu.Models;
 using QLBaoDienTu.Models._Users;
+using QLBaoDienTu.Repositories;
+using QLBaoDienTu.Services;
 
 namespace QLBaoDienTu
 {
@@ -31,6 +33,9 @@ namespace QLBaoDienTu
                 })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddTransient<SeedData>();
 
             // ===== Authentication Cookie =====

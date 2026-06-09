@@ -66,15 +66,104 @@ namespace QLBaoDienTu.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Slug = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DeleteBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AuthorName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    AuthorEmail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ParentCommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApprovedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "News",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Summary = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ViewCount = table.Column<int>(type: "int", nullable: false),
+                    IsFeatured = table.Column<bool>(type: "bit", nullable: false),
+                    AllowComments = table.Column<bool>(type: "bit", nullable: false),
+                    ApprovedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PublishedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RejectionReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SubmittedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ApprovedByAdminId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DeleteBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_News", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NewsImages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    AlternativeText = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Caption = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    IsThumbnail = table.Column<bool>(type: "bit", nullable: false),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NewsImages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RelatedNews",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MainNewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RelatedNewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RelatedNews", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,133 +279,6 @@ namespace QLBaoDienTu.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "News",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    Slug = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    Summary = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SubmittedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApprovedByAdminId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ViewCount = table.Column<int>(type: "int", nullable: false),
-                    IsFeatured = table.Column<bool>(type: "bit", nullable: false),
-                    AllowComments = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ApprovedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PublishedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RejectionReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_News", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_News_AspNetUsers_ApprovedByAdminId",
-                        column: x => x.ApprovedByAdminId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_News_AspNetUsers_SubmittedByUserId",
-                        column: x => x.SubmittedByUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_News_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Comments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    NewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AuthorName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AuthorEmail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentCommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ApprovedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comments_Comments_ParentCommentId",
-                        column: x => x.ParentCommentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Comments_News_NewsId",
-                        column: x => x.NewsId,
-                        principalTable: "News",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "NewsImages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    NewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    AlternativeText = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Caption = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    IsThumbnail = table.Column<bool>(type: "bit", nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NewsImages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_NewsImages_News_NewsId",
-                        column: x => x.NewsId,
-                        principalTable: "News",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RelatedNews",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MainNewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RelatedNewsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RelatedNews", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RelatedNews_News_MainNewsId",
-                        column: x => x.MainNewsId,
-                        principalTable: "News",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RelatedNews_News_RelatedNewsId",
-                        column: x => x.RelatedNewsId,
-                        principalTable: "News",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -386,11 +348,6 @@ namespace QLBaoDienTu.Migrations
                 name: "IX_Comments_NewsId",
                 table: "Comments",
                 column: "NewsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_ParentCommentId",
-                table: "Comments",
-                column: "ParentCommentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_News_ApprovedByAdminId",
@@ -464,7 +421,13 @@ namespace QLBaoDienTu.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "News");
 
             migrationBuilder.DropTable(
                 name: "NewsImages");
@@ -476,13 +439,7 @@ namespace QLBaoDienTu.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "News");
-
-            migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
         }
     }
 }

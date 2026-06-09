@@ -140,18 +140,29 @@ namespace QLBaoDienTu.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("DeleteBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("DisplayOrder")
+                    b.Property<int?>("DisplayOrder")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -163,6 +174,9 @@ namespace QLBaoDienTu.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -220,8 +234,6 @@ namespace QLBaoDienTu.Migrations
 
                     b.HasIndex("NewsId");
 
-                    b.HasIndex("ParentCommentId");
-
                     b.ToTable("Comments");
                 });
 
@@ -247,8 +259,20 @@ namespace QLBaoDienTu.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DeleteBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsFeatured")
                         .HasColumnType("bit");
@@ -257,7 +281,6 @@ namespace QLBaoDienTu.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RejectionReason")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -281,6 +304,9 @@ namespace QLBaoDienTu.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -561,106 +587,11 @@ namespace QLBaoDienTu.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("QLBaoDienTu.Models.Comment", b =>
-                {
-                    b.HasOne("QLBaoDienTu.Models.News", "News")
-                        .WithMany("Comments")
-                        .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QLBaoDienTu.Models.Comment", "ParentComment")
-                        .WithMany("ChildComments")
-                        .HasForeignKey("ParentCommentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("News");
-
-                    b.Navigation("ParentComment");
-                });
-
-            modelBuilder.Entity("QLBaoDienTu.Models.News", b =>
-                {
-                    b.HasOne("QLBaoDienTu.Models._Users.AppUser", "ApprovedByAdmin")
-                        .WithMany()
-                        .HasForeignKey("ApprovedByAdminId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("QLBaoDienTu.Models.Category", "Category")
-                        .WithMany("News")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("QLBaoDienTu.Models._Users.AppUser", "SubmittedByUser")
-                        .WithMany()
-                        .HasForeignKey("SubmittedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ApprovedByAdmin");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("SubmittedByUser");
-                });
-
-            modelBuilder.Entity("QLBaoDienTu.Models.NewsImage", b =>
-                {
-                    b.HasOne("QLBaoDienTu.Models.News", "News")
-                        .WithMany("NewsImages")
-                        .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("News");
-                });
-
-            modelBuilder.Entity("QLBaoDienTu.Models.RelatedNews", b =>
-                {
-                    b.HasOne("QLBaoDienTu.Models.News", "MainNews")
-                        .WithMany("RelatedNewsAsMain")
-                        .HasForeignKey("MainNewsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QLBaoDienTu.Models.News", "RelatedNewsItem")
-                        .WithMany("RelatedNewsAsRelated")
-                        .HasForeignKey("RelatedNewsId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("MainNews");
-
-                    b.Navigation("RelatedNewsItem");
-                });
-
             modelBuilder.Entity("QLBaoDienTu.Models._Users.AppUserRole", b =>
                 {
                     b.HasOne("QLBaoDienTu.Models._Users.AppRole", null)
                         .WithMany("UserRoles")
                         .HasForeignKey("AppRoleId");
-                });
-
-            modelBuilder.Entity("QLBaoDienTu.Models.Category", b =>
-                {
-                    b.Navigation("News");
-                });
-
-            modelBuilder.Entity("QLBaoDienTu.Models.Comment", b =>
-                {
-                    b.Navigation("ChildComments");
-                });
-
-            modelBuilder.Entity("QLBaoDienTu.Models.News", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("NewsImages");
-
-                    b.Navigation("RelatedNewsAsMain");
-
-                    b.Navigation("RelatedNewsAsRelated");
                 });
 
             modelBuilder.Entity("QLBaoDienTu.Models._Users.AppRole", b =>
