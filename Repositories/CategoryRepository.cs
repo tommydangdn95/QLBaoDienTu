@@ -51,11 +51,6 @@ namespace QLBaoDienTu.Repositories
                 throw new Exception($"Could not find category with id: ${category.Id}");
             }
 
-            existingCategory.Name = category.Name;
-            existingCategory.Description = category.Description;
-            existingCategory.IsActive = category.IsActive;
-            existingCategory.UpdatedDate = DateTime.Now;
-            existingCategory.UpdatedBy = userId;
 
             _dbContext.Categories.Update(existingCategory);
             var result = await _dbContext.SaveChangesAsync();
