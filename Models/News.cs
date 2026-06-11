@@ -22,7 +22,6 @@ namespace QLBaoDienTu.Models
         public NewsStatus Status { get; set; }
         public int ViewCount { get; set; }
         public bool IsFeatured { get; set; }
-        public bool AllowComments { get; set; }
 
         public DateTime? ApprovedDate { get; set; }
         public DateTime? PublishedDate { get; set; }
